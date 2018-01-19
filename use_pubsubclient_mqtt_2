@@ -1,0 +1,116 @@
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+
+const char* ssid = "KKK";
+const char* password =  "jksjad";
+IPAddress mqttServer(192, 168, 2, 22);
+const int mqttPort = 3453;
+//const char* mqttUser = "YourMqttUser";
+//const char* mqttPassword = "YourMqttUserPassword";
+char server[] = "www.google.com";
+int temperaturImRaum = 0;
+char tir[5];
+String tir_str;
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+
+void callback(char* topic, byte* payload, unsigned int length) {
+
+  Serial.print("Message arrived in topic: ");
+  Serial.println(topic);
+
+  Serial.print("Message:");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+
+  Serial.println();
+  Serial.println("-----------------------");
+
+}
+
+
+void setup() {
+
+  Serial.begin(115200);
+
+
+  //setup wifi
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.println("Connecting to WiFi..");
+  }
+  Serial.println("Connected to the WiFi network");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+
+  // if you get a connection, report back via serial:
+  if (espClient.connect(server, 80)) {
+    Serial.println("connected");
+    // Make a HTTP request:
+    //espClient.println("GET /search?q=arduino HTTP/1.1");
+    //espClient.println("Host: www.google.com");
+    //espClient.println("Connection: close");
+    //espClient.println();
+  } else {
+    // if you didn't get a connection to the server:
+    Serial.println("connection failed");
+  }
+
+
+  //setup mqtt
+  Serial.println("Connecting to MQTT...");
+
+  client.setServer("192.168.2.22", 3453);
+  client.setCallback(callback);
+  delay(1000);
+
+}
+
+void reconnect() {
+  Serial.println("reconnect");
+  client.disconnect();
+  delay(5000);
+  while (!client.connected() and client.state() != 0) {
+    Serial.println("connected_0");
+
+    if (client.connect("ESP8266Client")) {
+
+      Serial.println("connected_1");
+
+    } else {
+
+      Serial.print("failed with state ");
+      Serial.println(client.state());
+      delay(2000);
+
+    }
+  }
+  client.subscribe("temp");
+}
+
+void loop() {
+  while ( client.state() != 0) {
+    reconnect();
+  }
+  client.loop();
+
+  if (temperaturImRaum < 10 ) {
+    String(temperaturImRaum).toCharArray(tir, 5);
+    if (client.publish("temp", tir, true)) {
+      Serial.println("worked");
+    } else {
+      Serial.println("failed");
+    }
+    delay(2000);
+
+    temperaturImRaum = temperaturImRaum + 1;
+  }
+
+
+}

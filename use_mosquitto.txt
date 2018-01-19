@@ -1,0 +1,18 @@
+// how to work with mosquitto:
+
+//start server on certain computer at port 3453
+mosquitto -d -p 3453
+
+//kill:
+sudo service mosquitto restart
+sudo killall mosquitto
+
+//see status of server:
+mosquitto_sub -h 192.168.2.22 -p 3453 -t '$SYS/broker/#'
+
+//get sensor data
+mosquitto_sub -h 192.168.2.22 -p 3453 -t 
+mosquitto_sub -h 192.168.2.22 -p 3453 -i listenfenster -t temp
+
+//post data (retained message -r)
+mosquitto_pub -h 192.168.2.22 -p 3453 -i publisherfenster -t temp -m '9.5' -r

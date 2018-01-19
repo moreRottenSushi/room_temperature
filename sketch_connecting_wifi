@@ -1,0 +1,54 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+
+
+
+ESP8266WebServer server(80);
+
+const char* ssid     = "ssid";
+const char* password = "pass";   
+int wifiStatus;
+ 
+void setup() {
+  // put your setup code here, to run once:
+   // initialize digital pin LED_BUILTIN as an output.
+  pinMode(2, OUTPUT);
+  Serial.begin(115200);
+  delay(200);
+  Serial.println();
+      Serial.println();
+      Serial.print("Your are connecting to;");
+      Serial.println(ssid);
+      
+      WiFi.begin(ssid, password);
+      
+      while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+      }
+     
+  
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  digitalWrite(2, HIGH);   // turn the LED on (HIGH is the voltage level)
+  delay(1000);                       // wait for a second
+  digitalWrite(2, LOW);    // turn the LED off by making the voltage LOW
+  delay(1000);                       // wait for a second
+  Serial.print("Hello!"); 
+   wifiStatus = WiFi.status();
+
+      if(wifiStatus == WL_CONNECTED){
+         Serial.println("");
+         Serial.println("Your ESP is connected!");  
+         Serial.println("Your IP address is: ");
+         Serial.println(WiFi.localIP());  
+      }
+      else{
+        Serial.println("");
+        Serial.println("WiFi not connected");
+      }
+      delay(1000); // check for connection every once a second
+
+}
