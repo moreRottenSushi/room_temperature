@@ -6,6 +6,11 @@
 
 
 //With our Server dain: in pubsubclient.h take the older version!!!!!!
+in pubsubclient.h change the version to 3.1 instead of 3.1.1 
+and increase the packet size to 256
+
+
+
 // Then this is a working example:
 
 #include <ESP8266WiFi.h>
