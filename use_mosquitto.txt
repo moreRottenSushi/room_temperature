@@ -14,5 +14,12 @@ mosquitto_sub -h 192.168.2.22 -p 3453 -t '$SYS/broker/#'
 mosquitto_sub -h 192.168.2.22 -p 3453 -t 
 mosquitto_sub -h 192.168.2.22 -p 3453 -i listenfenster -t temp
 
+//suscribe to all topics -t '#'
+
+
 //post data (retained message -r)
 mosquitto_pub -h 192.168.2.22 -p 3453 -i publisherfenster -t temp -m '9.5' -r
+
+
+//save stuff in a log file with date
+mosquitto_sub -h 192.168.2.22 -p 3453 -i listenfenster -t "temp"| xargs -d$'\n' -L1 sh -c 'date "+%Y-%m-%d %T.%3N $0"'  > log_temp.txt &
